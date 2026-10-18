@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wally">
+<meta name="theme-color" content="#1d2a33">
+<title>Wally's Training Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: a pocket field notebook. One column, phone first, sticky page tabs, cards only for things you act on. */
+:root{
+  --bg:#f3f6f4; --surface:#ffffff; --sunk:#e6ece8; --line:#cfd9d3;
+  --ink:#1d2a33; --muted:#566670; --accent:#d9832b; --accent-ink:#8a4a0c; --accent-soft:#fbe9d5;
+  --teal:#2c6e6a; --teal-soft:#dcebe8;
+  --green:#2f7d4a; --green-soft:#ddf0e2; --yellow:#a87700; --yellow-soft:#fbf0cc; --red:#b2382f; --red-soft:#f8dedb;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121a1e; --surface:#1a252b; --sunk:#0e1518; --line:#2c3b42;
+  --ink:#e8eef0; --muted:#9fb0b8; --accent:#f0a052; --accent-ink:#f6bf86; --accent-soft:#3a2a1a;
+  --teal:#7cc3bb; --teal-soft:#1c3533;
+  --green:#7fcf98; --green-soft:#1b3324; --yellow:#e8c25a; --yellow-soft:#362d12; --red:#f08b80; --red-soft:#3d1f1c;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a1e; --surface:#1a252b; --sunk:#0e1518; --line:#2c3b42;
+  --ink:#e8eef0; --muted:#9fb0b8; --accent:#f0a052; --accent-ink:#f6bf86; --accent-soft:#3a2a1a;
+  --teal:#7cc3bb; --teal-soft:#1c3533;
+  --green:#7fcf98; --green-soft:#1b3324; --yellow:#e8c25a; --yellow-soft:#362d12; --red:#f08b80; --red-soft:#3d1f1c;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--teal)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,7vw,2.8rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.45rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.12rem;font-weight:700}
+p{margin:0}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+
+/* Tabs */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.05rem;white-space:nowrap}
+.brand span{color:var(--accent)}
+.tabs{display:flex;gap:6px;margin-left:auto}
+.tab{font:inherit;font-size:.92rem;font-weight:700;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 13px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+main{padding-block:28px 64px}
+section{display:grid;gap:14px}
+.page{display:grid;gap:40px}
+.lede{font-size:1.08rem;max-width:62ch}
+.hero{display:grid;gap:12px}
+
+/* Profile */
+.profile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.profile-head{display:flex;gap:14px;align-items:center;padding:16px;background:var(--teal-soft)}
+.paw{flex:none;width:52px;height:52px;border-radius:50%;background:var(--surface);display:grid;place-items:center}
+.paw svg{width:30px;height:30px;fill:var(--teal)}
+.profile dl{margin:0;display:grid;grid-template-columns:minmax(110px,32%) 1fr}
+.profile dt,.profile dd{margin:0;padding:10px 16px;border-top:1px solid var(--line)}
+.profile dt{font-weight:700;color:var(--muted);font-size:.92rem}
+.age-note{font-size:.85rem;color:var(--muted)}
+
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.callout strong{color:var(--accent-ink)}
+
+/* Priorities */
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.lane{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;align-content:start;background:var(--surface)}
+.lane.now{border-color:var(--teal);box-shadow:inset 0 3px 0 var(--teal)}
+.lane ol,.lane ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);width:max-content}
+.lane.now .tag{background:var(--teal);color:var(--surface)}
+
+/* Steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.steps li::before{content:counter(s);font-family:var(--f-display);font-weight:800;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+
+/* Tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.word{font-family:var(--f-display);font-weight:800;color:var(--accent-ink);white-space:nowrap}
+.status{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.status.built{color:var(--green)}
+
+.stars{font-family:var(--f-mono);font-weight:500;white-space:nowrap;color:var(--accent-ink)}
+.stage-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stage{padding:12px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);display:grid;gap:4px}
+.stage b{font-family:var(--f-display)}
+.meter{display:flex;gap:3px}
+.meter i{height:6px;flex:1;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--teal)}
+
+/* Week page */
+.week-hero{display:grid;gap:10px;padding:20px;border-radius:var(--r);background:var(--ink);color:var(--bg)}
+.week-hero .eyebrow{color:var(--accent)}
+.week-hero p{max-width:60ch;opacity:.92}
+.skill{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px}
+.skill-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between}
+.skill .num{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.chip{font-family:var(--f-mono);font-size:.75rem;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
+.chip.stage-chip{background:var(--teal-soft);color:var(--teal)}
+.kv{display:grid;gap:10px}
+.kv > div{display:grid;gap:2px}
+.kv .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.skill ol{margin:0;padding-left:1.25em;display:grid;gap:5px}
+.script{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:.96rem}
+.script q{font-family:var(--f-display);font-weight:700;color:var(--accent-ink);quotes:"\201C" "\201D"}
+.criterion{border:1px dashed var(--teal);border-radius:8px;padding:10px 12px;display:grid;gap:8px}
+.tally{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--teal);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--surface);font-weight:700}
+.dot[aria-pressed="true"]{background:var(--teal)}
+.dot[aria-pressed="true"]::after{content:"✓"}
+.bonus{border-style:dashed}
+
+/* Rhythm grid */
+.rhythm{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.rhythm table{min-width:520px}
+.rhythm td,.rhythm th{text-align:center;padding:8px 6px}
+.rhythm td:first-child,.rhythm th:first-child{text-align:left;padding-left:14px;min-width:150px}
+.slot-name{font-weight:700;font-size:.92rem}
+.slot-sub{font-size:.8rem;color:var(--muted)}
+.tick{width:34px;height:34px;border-radius:8px;border:2px solid var(--line);background:var(--bg);cursor:pointer}
+.tick[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.tick[aria-pressed="true"]::after{content:"✓";color:var(--surface);font-weight:700}
+.today-col{background:var(--teal-soft)}
+
+/* Traffic light */
+.lights{display:grid;gap:10px}
+.light{display:grid;grid-template-columns:14px 1fr;gap:12px;padding:12px 14px;border-radius:var(--r)}
+.light::before{content:"";width:14px;border-radius:7px}
+.light.g{background:var(--green-soft)} .light.g::before{background:var(--green)}
+.light.y{background:var(--yellow-soft)} .light.y::before{background:var(--yellow)}
+.light.r{background:var(--red-soft)} .light.r::before{background:var(--red)}
+.light b{font-family:var(--f-display)}
+
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start}
+.panel ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+/* Forms */
+label{font-weight:700;font-size:.92rem}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.form{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.field{display:grid;gap:4px;min-width:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"][data-v="green"]{background:var(--green);color:var(--surface);border-color:var(--green)}
+.seg button[aria-pressed="true"][data-v="yellow"]{background:var(--yellow);color:var(--surface);border-color:var(--yellow)}
+.seg button[aria-pressed="true"][data-v="red"]{background:var(--red);color:var(--surface);border-color:var(--red)}
+.seg button[aria-pressed="true"][data-v="win"]{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn{font:inherit;font-weight:700;background:var(--ink);color:var(--bg);border:0;padding:11px 18px;border-radius:999px;cursor:pointer;width:max-content}
+.btn:disabled{opacity:.5;cursor:default}
+.save-state{font-size:.85rem;color:var(--muted);min-height:1.2em}
+
+.entries{display:grid;gap:10px}
+.entry{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface);display:grid;gap:6px;border-left-width:5px}
+.entry.green{border-left-color:var(--green)} .entry.yellow{border-left-color:var(--yellow)} .entry.red{border-left-color:var(--red)} .entry.win{border-left-color:var(--accent)}
+.entry-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.82rem;color:var(--muted);font-family:var(--f-mono)}
+.entry p{white-space:pre-wrap;overflow-wrap:anywhere}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;color:var(--muted)}
+.offline{font-size:.88rem;padding:10px 12px;border-radius:8px;background:var(--yellow-soft);color:var(--ink)}
+
+.sources{font-size:.88rem;color:var(--muted);display:grid;gap:4px}
+.sources ul{margin:0;padding-left:1.2em}
+footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){.page{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">Wally<span>.</span>hub</div>
+    <nav class="tabs" role="tablist" aria-label="Hub pages">
+      <button class="tab" role="tab" id="tab-start" aria-controls="start" aria-selected="true">Start here</button>
+      <button class="tab" role="tab" id="tab-week" aria-controls="week" aria-selected="false">This week</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ START HERE ============ -->
+<div class="page" id="start" role="tabpanel" aria-labelledby="tab-start">
+
+  <section class="hero">
+    <span class="eyebrow">Start here · Living training hub</span>
+    <h1>Wally's Training Hub</h1>
+    <p class="lede">A calm, reward-based plan to grow Wally into a companion dog with unusually good manners. Short sessions, real-life practice, and progress we can actually see.</p>
+  </section>
+
+  <section aria-labelledby="h-glance">
+    <h2 id="h-glance">Wally at a glance</h2>
+    <div class="profile">
+      <div class="profile-head">
+        <div class="paw" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="10" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="14.5" cy="5.5" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3.5 0-6.5 4.3-6.5 6.6 0 2 1.7 2.9 3.4 2.4 1.1-.3 2-.8 3.1-.8s2 .5 3.1.8c1.7.5 3.4-.4 3.4-2.4 0-2.3-3-6.6-6.5-6.6z"/></svg></div>
+        <div>
+          <h3>Wally</h3>
+          <p class="small muted">Mixed doodle · neutered male · beginner</p>
+        </div>
+      </div>
+      <dl>
+        <dt>Age</dt><dd>About 4 months at plan start <span class="age-note">(assumed as of 18 Oct 2026; update if different)</span></dd>
+        <dt>Adult size</dt><dd>About 25 lb / 11 kg</dd>
+        <dt>Background</dt><dd>Several treat-based classes at a humane society</dd>
+        <dt>Can do now</dt><dd>Sit · emerging recall · check-ins in quiet places · loose-leash walking is improving</dd>
+        <dt>Working on</dt><dd>Big puppy distractibility · barking at passing people or dogs · jumping and wiggling at greetings · settling around distraction · being left alone</dd>
+        <dt>Out in public</dt><dd>Curious in a pet store; little other store experience</dd>
+        <dt>Rewards</dt><dd>Treats (testing play, sniffing and movement as rewards from Week 1)</dd>
+        <dt>Crate</dt><dd>Not crate trained. Optional; may be added later for travel and safe rest</dd>
+        <dt>Time</dt><dd>Sessions under 10 minutes; most are 1 to 5</dd>
+      </dl>
+    </div>
+    <div class="callout">
+      <strong>Wally is a companion dog.</strong> We use service-dog public-access standards only as a voluntary long-term reference for calm, reliable behaviour. We never present him as a service dog or claim any certification.
+    </div>
+  </section>
+
+  <section aria-labelledby="h-prio">
+    <h2 id="h-prio">Current priorities</h2>
+    <p class="muted">Foundations first. Precision and demanding places come later, once Wally is older and the basics are steady.</p>
+    <div class="lanes">
+      <div class="lane now">
+        <span class="tag">Now</span>
+        <ol>
+          <li>Engagement and voluntary check-ins</li>
+          <li>Calm watching of dogs and people</li>
+          <li>Recall</li>
+        </ol>
+      </div>
+      <div class="lane">
+        <span class="tag">Next</span>
+        <ol start="4">
+          <li>Loose-leash walking</li>
+          <li>Settle on a portable mat</li>
+          <li>Comfort being alone</li>
+          <li>Four paws down, calm greetings</li>
+        </ol>
+      </div>
+      <div class="lane">
+        <span class="tag">Later</span>
+        <ol start="8">
+          <li>Leave it and drop it</li>
+          <li>Doorway and car pauses</li>
+          <li>Handling, grooming and vet comfort</li>
+        </ol>
+        <p class="small muted">Not yet: formal heel, long stays, busy public places.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how">How to use this plan</h2>
+    <ol class="steps">
+      <li><div><b>Open "This week" before a session.</b> Everything you need for today is on that one page, including the exact words to say.</div></li>
+      <li><div><b>Tick the rhythm, not every repetition.</b> One tap per session is enough. Counting every treat is not the goal.</div></li>
+      <li><div><b>Log the moments that matter.</b> A win, a yellow or red moment, a new place. Add a photo or video link when you have one. Anyone helping with Wally can add notes too.</div></li>
+      <li><div><b>Reflect at the end of the week.</b> Answer the reflection prompts, then bring them to Claude. We decide together to repeat, split, simplify or move on.</div></li>
+    </ol>
+    <div class="callout"><strong>The golden rule:</strong> a week ending is never a reason to move on. Wally's evidence is.</div>
+  </section>
+
+  <section aria-labelledby="h-words">
+    <h2 id="h-words">Our words</h2>
+    <p class="muted">Everyone in the house uses the same words, said once, in a normal voice.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Say</th><th>It means</th></tr></thead>
+        <tbody>
+          <tr><td class="word">"Yes!"</td><td>That exact moment was right. A reward is coming.</td></tr>
+          <tr><td class="word">"Free"</td><td>You're done. Go be a puppy.</td></tr>
+          <tr><td class="word">"Wally"</td><td>Look at me. Said once, not repeated.</td></tr>
+          <tr><td class="word">"Wally, come!"</td><td>Run to me. Always worth it. Never used for something he dislikes.</td></tr>
+          <tr><td class="word">"Let's go"</td><td>Cheerful turn and walk away together.</td></tr>
+          <tr><td class="word">"Go sniff"</td><td>Permission to sniff, used as a reward.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-map">
+    <h2 id="h-map">Hub map</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Page</th><th>What it holds</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><b>Start here</b></td><td>Profile, priorities, words, ratings</td><td class="status built">Built</td></tr>
+          <tr><td><b>This week</b></td><td>The working page: skills, rhythm, notes</td><td class="status built">Week 1 built</td></tr>
+          <tr><td>Skill library</td><td>One page per skill, standard template</td><td class="status muted">Next</td></tr>
+          <tr><td>Barking and big feelings</td><td>Full green / yellow / red guide</td><td class="status muted">Next</td></tr>
+          <tr><td>Progress dashboard</td><td>Current stage, latest evidence, next milestone</td><td class="status muted">Planned</td></tr>
+          <tr><td>Training journal</td><td>Weekly observations and key moments</td><td class="status muted">Started (on This week)</td></tr>
+          <tr><td>Reward bank</td><td>What Wally will work for, and where</td><td class="status muted">Planned</td></tr>
+          <tr><td>Long-term roadmap</td><td>Advanced public manners, kept separate</td><td class="status muted">Planned</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rate">
+    <h2 id="h-rate">How suggestions are rated</h2>
+    <p class="muted">Each major suggestion carries a reference strength. These ratings are Claude's synthesis of the sources, not a score given by any authority.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Rating</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td class="stars">5/5</td><td><b>Direct benchmark or strong consensus.</b> Explicit in a public-access standard, veterinary behaviour guidance, or strong professional agreement.</td></tr>
+          <tr><td class="stars">4/5</td><td><b>Strong supporting practice.</b> Builds directly toward a benchmark and is widely recommended by reward-based professionals, though the exact exercise is not prescribed.</td></tr>
+          <tr><td class="stars">3/5</td><td><b>Useful foundation.</b> Sensible skill-building that supports the goal, not a formal benchmark.</td></tr>
+          <tr><td class="stars">2/5</td><td><b>Optional enhancement.</b> Handy for Wally's life, not essential.</td></tr>
+          <tr><td class="stars">1/5</td><td><b>Enrichment or trick.</b> Mainly for fun and relationship.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-stage">
+    <h2 id="h-stage">Progress stages</h2>
+    <p class="muted">Four honest stages instead of percentages. One great session never makes a skill Reliable.</p>
+    <div class="stage-row">
+      <div class="stage"><div class="meter"><i class="on"></i><i></i><i></i><i></i></div><b>Introduced</b><span class="small">Learning the game.</span></div>
+      <div class="stage"><div class="meter"><i class="on"></i><i class="on"></i><i></i><i></i></div><b>Emerging</b><span class="small">Does it somewhere easy, with frequent rewards.</span></div>
+      <div class="stage"><div class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div><b>Developing</b><span class="small">Does it in more than one place, with mild distraction.</span></div>
+      <div class="stage"><div class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><b>Reliable</b><span class="small">Does it consistently wherever it's needed.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-help">
+    <h2 id="h-help">When to call in a professional</h2>
+    <div class="panel">
+      <p>Talk to your vet or a qualified reward-based behaviour professional if you see any of these:</p>
+      <ul>
+        <li>Panic or growing distress when alone (escape attempts, heavy drooling, accidents, refusing food)</li>
+        <li>Biting, snapping or guarding food or toys</li>
+        <li>A sudden change in behaviour, or signs of pain or illness</li>
+        <li>Fear or barking that is getting worse despite distance and good management</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sources" aria-label="Sources">
+    <b>References used for ratings</b>
+    <ul>
+      <li><a href="https://www.alberta.ca/get-service-dog-assessed" target="_blank" rel="noopener">Government of Alberta: Get a service dog assessed</a> (voluntary reference only)</li>
+      <li><a href="https://avsab.org/resources/position-statements/" target="_blank" rel="noopener">AVSAB position statements</a>, including Humane Dog Training (2021) and Puppy Socialization</li>
+    </ul>
+  </section>
+</div>
+
+<!-- ============ THIS WEEK ============ -->
+<div class="page" id="week" role="tabpanel" aria-labelledby="tab-week" hidden>
+
+  <section class="week-hero">
+    <span class="eyebrow">This week · Week 1 · from Mon 19 Oct</span>
+    <h1>Notice me, notice the world</h1>
+    <p>Wally is four months old and the world is very exciting. This week we teach him that checking in with you pays, that he can look at a dog or person and then look away, and that coming when called is the best game in the house. Small wins, lots of them.</p>
+  </section>
+
+  <section aria-labelledby="h-skills">
+    <h2 id="h-skills">Three main skills</h2>
+
+    <article class="skill">
+      <div class="skill-top"><span class="num">Skill 1</span><span class="chip stage-chip">Stage: Emerging</span></div>
+      <h3>Check-ins and the name game</h3>
+      <div class="kv">
+        <div><span class="k">Reference strength</span><span><span class="stars">4/5</span> Alberta's assessment expects the handler to keep control and the dog to stay calm in busy places; attention to the handler is the base of that. The exact game is common reward-based practice.</span></div>
+        <div><span class="k">Baseline</span><span>Offers check-ins in quiet places. Loses focus quickly with distraction.</span></div>
+      </div>
+      <ol>
+        <li><b>Free check-ins (indoors):</b> any time Wally looks up at you on his own, say "Yes!" and drop a treat at your feet.</li>
+        <li><b>Name game:</b> when he's mildly distracted (sniffing the floor), say "Wally" once. Head turn toward you: "Yes!" and treat. No turn: wait 3 seconds, then make a kissy sound to help. Don't repeat his name.</li>
+        <li>5 to 8 reps, then "Free". Stop while he still wants more.</li>
+      </ol>
+      <div class="script">Say: <q>Wally</q> → he turns → <q>Yes!</q> → treat at your feet → <q>Free</q></div>
+      <div class="criterion">
+        <span class="small"><b>Ready to move outside when:</b> head turn within about 2 seconds on 8 of 10 name calls, indoors, in 3 sessions in a row. <span class="muted">(Training criterion, not an official standard.)</span></span>
+        <div class="tally" data-crit="checkins"><span class="small muted">Sessions that hit it:</span></div>
+      </div>
+    </article>
+
+    <article class="skill">
+      <div class="skill-top"><span class="num">Skill 2</span><span class="chip stage-chip">Stage: Introduced</span></div>
+      <h3>Calm watching: look, then look back</h3>
+      <div class="kv">
+        <div><span class="k">Reference strength</span><span><span class="stars">4/5</span> Alberta's assessment looks for calm behaviour around crowds and other animals and a dog that does not attract attention. This exercise builds toward that, starting far away.</span></div>
+        <div><span class="k">Baseline</span><span>Barks at passing people or dogs on walks. Cause not yet clear (excitement and frustration are likely at this age); we watch and log, we don't label.</span></div>
+      </div>
+      <ol>
+        <li>Choose a spot where people or dogs pass <b>far enough away that Wally can still eat</b>: across a street, a park edge, a car window.</li>
+        <li>Wally looks at the person or dog → "Yes!" → treat near your leg. The "Yes!" pays for looking calmly.</li>
+        <li>After a few reps, pause a second after he looks. If he looks back to you by himself, "Yes!" and a better treat.</li>
+        <li>3 to 5 sightings per walk is plenty. Then walk on or "Go sniff".</li>
+      </ol>
+      <div class="script">Wally looks at a dog → <q>Yes!</q> → treat. Starting to stiffen → <q>Let's go</q> and turn away happily.</div>
+      <div class="criterion">
+        <span class="small"><b>Ready to move a little closer when:</b> takes food within 3 seconds of a sighting, no barking, on 3 walks in a row at the same distance. <span class="muted">(Training criterion.)</span></span>
+        <div class="tally" data-crit="watching"><span class="small muted">Walks that hit it:</span></div>
+      </div>
+    </article>
+
+    <article class="skill">
+      <div class="skill-top"><span class="num">Skill 3</span><span class="chip stage-chip">Stage: Emerging</span></div>
+      <h3>Recall: puppy ping-pong</h3>
+      <div class="kv">
+        <div><span class="k">Reference strength</span><span><span class="stars">4/5</span> A reliable recall is a core safety skill in reward-based programmes and supports handler control. The ping-pong format is a practitioner game, not a prescribed test.</span></div>
+        <div><span class="k">Baseline</span><span>Emerging recall in easy settings.</span></div>
+      </div>
+      <ol>
+        <li>Two people, about 3 metres apart, indoors. One person says "Wally, come!" once, in a happy voice, and backs up a step.</li>
+        <li>When he arrives, gently touch his collar, "Yes!", then 2 or 3 treats one after another.</li>
+        <li>Other person calls. 4 to 6 recalls total, then "Free" and play.</li>
+        <li>Solo version: toss a treat away, and as he finishes it, call him back.</li>
+      </ol>
+      <div class="script"><q>Wally, come!</q> → he arrives → collar touch → <q>Yes!</q> → treat, treat, treat → <q>Free</q></div>
+      <div class="criterion">
+        <span class="small"><b>Ready for the yard when:</b> comes on the first call 8 of 10 times indoors, in 3 sessions in a row. <span class="muted">(Training criterion.)</span></span>
+        <div class="tally" data-crit="recall"><span class="small muted">Sessions that hit it:</span></div>
+      </div>
+      <p class="small muted">Protect the word: this week, don't use "Wally, come!" for bath time, nail trims or ending fun. Go and get him instead.</p>
+    </article>
+
+    <article class="skill bonus">
+      <div class="skill-top"><span class="num">Bonus, only if it's going well</span><span class="chip">3/5 Useful foundation</span></div>
+      <h3>Meet the mat</h3>
+      <p>Put a towel or small mat on the floor. Reward Wally any time he steps on it, then sits or lies on it. Drop treats between his front paws. 1 minute, then "Free". No cue word yet; we are teaching him the mat is a great place to be. It leads to settling in cafés and at the vet much later.</p>
+    </article>
+  </section>
+
+  <section aria-labelledby="h-rhythm">
+    <h2 id="h-rhythm">Daily rhythm</h2>
+    <p class="muted">Tap once per session. Skipping a slot is fine; aim for most days, not perfect days. Ticks are remembered on this phone only.</p>
+    <div class="rhythm">
+      <table id="rhythm">
+        <thead><tr><th>Slot</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="save-state" id="rhythm-state" aria-live="polite"></p>
+  </section>
+
+  <section aria-labelledby="h-manage">
+    <h2 id="h-manage">This week's focus outside training</h2>
+    <div class="twocol">
+      <div class="panel">
+        <span class="chip" style="width:max-content">Management · 4/5</span>
+        <h3>No on-leash greetings</h3>
+        <p>Every leash greeting right now is a rehearsal of pulling, jumping and barking. For this week:</p>
+        <ul>
+          <li>Walk at quieter times or on quieter routes</li>
+          <li>Cross the street or step behind a parked car when a dog comes</li>
+          <li>Friendly line for people: "He's in training, so we're saying hi from here today!"</li>
+        </ul>
+        <p class="small muted">Management is not training. It stops the old habit growing while the new one is built.</p>
+      </div>
+      <div class="panel">
+        <span class="chip" style="width:max-content">Reward experiment · 3/5</span>
+        <h3>The taste test and the sniff test</h3>
+        <ul>
+          <li><b>Taste test:</b> put two different treats in your closed hands, let him choose. Repeat with 4 or 5 foods to find his low, medium and top favourites.</li>
+          <li><b>Sniff test:</b> on a walk, after a check-in, say "Go sniff" and let him sniff for 5 seconds. Does he check in again faster next time? Then sniffing is a reward.</li>
+        </ul>
+        <p class="small muted">Log what you learn below with the "Win" tag. This starts the Reward bank. AVSAB recommends reward-based methods alone.</p>
+      </div>
+      <div class="panel">
+        <span class="chip" style="width:max-content">Baseline only · 4/5</span>
+        <h3>Being alone: just observe</h3>
+        <p>No alone-time training yet. Once this week, film a short, ordinary absence (take out the recycling) with a phone or camera. Note: did he vocalise, pace, settle, eat? How long until he relaxed after you returned?</p>
+        <p class="small muted">Come back before distress builds. If you see panic, escape attempts or heavy drooling, talk to your vet.</p>
+      </div>
+      <div class="panel">
+        <span class="chip" style="width:max-content">Rest</span>
+        <h3>Decompression daily</h3>
+        <p>One slow, sniffy wander or a long chew or lick mat every day, with no training asked. Tired puppies bark and bite more; rest is part of the plan.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-lights">
+    <h2 id="h-lights">Pocket guide: barking on walks</h2>
+    <div class="lights">
+      <div class="light g"><div><b>Green: notices, still loose, still eats.</b> "Yes!" for the calm look, treat by your leg, let him look again, carry on.</div></div>
+      <div class="light y"><div><b>Yellow: stares, leans, mouth closes, leash tightens.</b> Add distance now. "Let's go", turn away cheerfully, put a car or hedge between you. Reward when he reconnects.</div></div>
+      <div class="light r"><div><b>Red: barking, lunging, won't eat.</b> Calmly leave. No scolding, no forced sit. Let him recover. Log the trigger, distance and recovery time, and make the next walk easier.</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-hard">
+    <h2 id="h-hard">Signs this week is too hard</h2>
+    <div class="panel">
+      <ul>
+        <li>He stops taking treats, or snatches them hard</li>
+        <li>More barking or zoomies during or after sessions</li>
+        <li>He wanders off or sniffs away from you during indoor games</li>
+        <li>Recovery after a trigger takes longer than a minute or two</li>
+      </ul>
+      <p><b>What to do:</b> make it easier. More distance, a quieter room, better treats, shorter sessions. That's the plan working, not failing.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-notes">
+    <h2 id="h-notes">Training notes</h2>
+    <p class="muted">Log moments that matter, not every rep. Each note saves as a small file in the shared Wally Notes folder, so Claude can read everyone's notes.</p>
+    <form class="form panel" id="note-form" autocomplete="off">
+      <div class="field"><label for="n-who">Your name</label><input type="text" id="n-who" placeholder="e.g. Kelly" required></div>
+      <div class="row">
+        <div class="field"><label for="n-date">Date</label><input type="date" id="n-date" required></div>
+        <div class="field"><label for="n-skill">About</label>
+          <select id="n-skill">
+            <option value="checkins">Check-ins and name game</option>
+            <option value="watching">Calm watching</option>
+            <option value="recall">Recall</option>
+            <option value="mat">Mat (bonus)</option>
+            <option value="rewards">Reward experiment</option>
+            <option value="alone">Being alone</option>
+            <option value="walk">Walk in general</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><span id="n-light-label" style="font-weight:700;font-size:.92rem">How did it go?</span>
+        <div class="seg" id="n-light" role="group" aria-labelledby="n-light-label">
+          <button type="button" data-v="win" aria-pressed="false">Win</button>
+          <button type="button" data-v="green" aria-pressed="false">Green</button>
+          <button type="button" data-v="yellow" aria-pressed="false">Yellow</button>
+          <button type="button" data-v="red" aria-pressed="false">Red</button>
+        </div>
+      </div>
+      <div class="field"><label for="n-text">What happened</label><textarea id="n-text" placeholder="e.g. Dog across the street on 7th Ave, about 30 m. Looked, took a treat, looked back on his own twice." required></textarea></div>
+      <div class="field"><label for="n-link">Photo or video link (optional)</label><input type="url" id="n-link" placeholder="https://"></div>
+      <button class="btn" type="submit" id="n-save">Save note to folder</button>
+      <p class="save-state" id="n-state" aria-live="polite"></p>
+    </form>
+    <div class="entries" id="entries">
+      <div class="empty" id="entries-empty">No notes saved from this phone yet. After you save one, a copy shows up here, newest on top.</div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-reflect">
+    <h2 id="h-reflect">End-of-week reflection</h2>
+    <p class="muted">Fill in on Sunday. Then bring it to Claude to plan Week 2.</p>
+    <div class="form panel" id="reflect">
+      <div class="field"><label for="r-best">Which skill improved most, and where did you see it?</label><textarea id="r-best" data-r="best"></textarea></div>
+      <div class="field"><label for="r-hard">Which moment was hardest? What was the trigger and distance?</label><textarea id="r-hard" data-r="hard"></textarea></div>
+      <div class="field"><label for="r-reward">What did the reward tests show? Top treat? Did sniffing work?</label><textarea id="r-reward" data-r="reward"></textarea></div>
+      <div class="field"><label for="r-alone">What did the alone-time video show?</label><textarea id="r-alone" data-r="alone"></textarea></div>
+      <div class="field"><label for="r-time">How realistic was the rhythm? What would make it easier to keep?</label><textarea id="r-time" data-r="time"></textarea></div>
+      <button class="btn" type="button" id="r-save">Save reflection to folder</button>
+      <p class="save-state" id="r-state" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-next">
+    <h2 id="h-next">Next-step rule</h2>
+    <div class="callout">
+      <strong>Move a skill forward only when it hits its criterion in 3 sessions in a row.</strong> If it doesn't, repeat Week 1 for that skill, or split it into a smaller step. Skills can move at different speeds.
+    </div>
+  </section>
+</div>
+
+</main>
+<footer><div class="wrap">Wally's Training Hub · Week 1 · Reward-based, humane methods only. Wally is a companion dog in training, not a service dog.</div></footer>
+
+<script>
+(() => {
+  // ---------- Safe storage (this phone only) ----------
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem('wally:' + k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem('wally:' + k, JSON.stringify(v)); } catch(e){} }
+  };
+
+  // ---------- Tabs ----------
+  const tabs = [...document.querySelectorAll('.tab')];
+  function show(id){
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.getAttribute('aria-controls') === id)));
+    document.querySelectorAll('.page').forEach(p => p.hidden = p.id !== id);
+    store.set('tab', id);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => { show(t.getAttribute('aria-controls')); window.scrollTo({top:0}); }));
+  show(location.hash === '#week' ? 'week' : (store.get('tab', 'start') === 'week' ? 'week' : 'start'));
+
+  // ---------- Week setup ----------
+  const WEEK = 1;
+  const WEEK_START = new Date(2026, 9, 19); // Mon 19 Oct 2026
+  const DAYS = Array.from({length:7}, (_, i) => { const d = new Date(WEEK_START); d.setDate(d.getDate()+i); return d; });
+  const SLOTS = [
+    {k:'am', name:'Morning game', sub:'3 min · name game + free check-ins'},
+    {k:'walk', name:'Walk practice', sub:'3 to 5 calm-watching sightings'},
+    {k:'pm', name:'Evening recall', sub:'2 min ping-pong (+ mat if easy)'},
+    {k:'rest', name:'Rest / sniffy wander', sub:'no training asked'}
+  ];
+  const todayIdx = (() => { const t = new Date(); t.setHours(0,0,0,0); const i = Math.round((t - WEEK_START)/86400000); return (i>=0 && i<7) ? i : -1; })();
+  const pad = n => String(n).padStart(2,'0');
+  const isoDate = d => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+
+  // Rhythm table
+  const rt = document.getElementById('rhythm');
+  const headRow = rt.querySelector('thead tr');
+  DAYS.forEach((d, i) => {
+    const th = document.createElement('th');
+    th.textContent = d.toLocaleDateString('en-CA', {weekday:'short'}) + ' ' + d.getDate();
+    if (i === todayIdx) th.className = 'today-col';
+    headRow.appendChild(th);
+  });
+  const tbody = rt.querySelector('tbody');
+  SLOTS.forEach(s => {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td');
+    const n = document.createElement('div'); n.className = 'slot-name'; n.textContent = s.name;
+    const sub = document.createElement('div'); sub.className = 'slot-sub'; sub.textContent = s.sub;
+    td0.append(n, sub); tr.appendChild(td0);
+    DAYS.forEach((d, i) => {
+      const td = document.createElement('td');
+      if (i === todayIdx) td.className = 'today-col';
+      const b = document.createElement('button');
+      b.className = 'tick'; b.type = 'button';
+      b.dataset.key = 'd' + (i+1) + '_' + s.k;
+      b.setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-label', s.name + ', ' + d.toLocaleDateString('en-CA', {weekday:'long'}));
+      td.appendChild(b); tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  // Criterion dots
+  document.querySelectorAll('.tally').forEach(t => {
+    for (let i = 1; i <= 3; i++){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'dot';
+      b.dataset.key = 'crit_' + t.dataset.crit + '_' + i;
+      b.setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-label', 'Session ' + i + ' met the criterion');
+      t.appendChild(b);
+    }
+  });
+
+  let checks = store.get('checks-week' + WEEK, {});
+  function paintChecks(){
+    document.querySelectorAll('[data-key]').forEach(b => b.setAttribute('aria-pressed', String(!!checks[b.dataset.key])));
+  }
+  paintChecks();
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.tick, .dot');
+    if (!b) return;
+    checks[b.dataset.key] = !checks[b.dataset.key];
+    store.set('checks-week' + WEEK, checks);
+    paintChecks();
+  });
+
+  // ---------- Saving files to the phone ----------
+  async function saveFile(filename, text){
+    const blob = new Blob([text], {type:'text/plain'});
+    let file = null;
+    try { file = new File([blob], filename, {type:'text/plain'}); } catch(e) {}
+    // Share sheet first when the phone supports sharing files (Save to Files remembers the last folder)
+    if (file && navigator.canShare && navigator.canShare({files:[file]})) {
+      try { await navigator.share({files:[file]}); return 'saved'; }
+      catch(e) { if (e && e.name === 'AbortError') return 'cancelled'; }
+    }
+    // Fallback: a normal download into the browser's download folder
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return 'downloaded';
+  }
+  const slug = s => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'someone';
+
+  // ---------- Notes ----------
+  const SKILL_NAMES = {checkins:'Check-ins', watching:'Calm watching', recall:'Recall', mat:'Mat', rewards:'Rewards', alone:'Being alone', walk:'Walk', other:'Other'};
+  const LIGHT_NAMES = {win:'Win', green:'Green', yellow:'Yellow', red:'Red'};
+  const fWho = document.getElementById('n-who');
+  const fDate = document.getElementById('n-date');
+  fWho.value = store.get('name', '');
+  fDate.value = isoDate(new Date());
+
+  let light = '';
+  const seg = document.getElementById('n-light');
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    light = light === b.dataset.v ? '' : b.dataset.v;
+    seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === light)));
+  });
+
+  const entriesEl = document.getElementById('entries');
+  const emptyEl = document.getElementById('entries-empty');
+  let myNotes = store.get('notes', []);
+
+  function renderNotes(){
+    [...entriesEl.querySelectorAll('.entry')].forEach(n => n.remove());
+    emptyEl.hidden = myNotes.length > 0;
+    myNotes.slice(0, 30).forEach(n => {
+      const el = document.createElement('article');
+      el.className = 'entry ' + (n.light || '');
+      const meta = document.createElement('div'); meta.className = 'entry-meta';
+      const parts = [];
+      if (n.date) { const [y,m,d] = n.date.split('-').map(Number); parts.push(new Date(y, m-1, d).toLocaleDateString('en-CA', {weekday:'short', month:'short', day:'numeric'})); }
+      parts.push(SKILL_NAMES[n.skill] || n.skill);
+      if (n.light) parts.push(LIGHT_NAMES[n.light]);
+      if (n.who) parts.push(n.who);
+      parts.forEach(p => { const s = document.createElement('span'); s.textContent = p; meta.appendChild(s); });
+      const p = document.createElement('p'); p.textContent = n.text;
+      el.append(meta, p);
+      if (n.link && /^https?:\/\//i.test(n.link)) {
+        const a = document.createElement('a'); a.href = n.link; a.target = '_blank'; a.rel = 'noopener'; a.className = 'small'; a.textContent = 'Open photo or video';
+        el.appendChild(a);
+      }
+      entriesEl.appendChild(el);
+    });
+  }
+  renderNotes();
+
+  const nState = document.getElementById('n-state');
+  document.getElementById('note-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const who = fWho.value.trim();
+    const text = document.getElementById('n-text').value.trim();
+    if (!who) { nState.textContent = 'Add your name first, so Claude knows who wrote the note.'; return; }
+    if (!text) { nState.textContent = 'Add a sentence about what happened first.'; return; }
+    store.set('name', who);
+    const note = {
+      who, date: fDate.value, skill: document.getElementById('n-skill').value,
+      light, text, link: document.getElementById('n-link').value.trim(), week: WEEK,
+      savedAt: new Date().toISOString()
+    };
+    const t = new Date();
+    const filename = note.date + '_' + pad(t.getHours()) + pad(t.getMinutes()) + '_' + slug(who) + '_' + note.skill + (light ? '_' + light : '') + '.txt';
+    const body = [
+      'Wally training note',
+      'Week: ' + WEEK,
+      'Date: ' + note.date,
+      'By: ' + who,
+      'Skill: ' + (SKILL_NAMES[note.skill] || note.skill),
+      'How it went: ' + (LIGHT_NAMES[light] || 'Not tagged'),
+      note.link ? 'Link: ' + note.link : null,
+      '',
+      text,
+      ''
+    ].filter(x => x !== null).join('\n');
+    const result = await saveFile(filename, body);
+    if (result === 'cancelled') { nState.textContent = 'Not saved. Tap Save note again when you are ready.'; return; }
+    myNotes.unshift(note); store.set('notes', myNotes.slice(0, 100)); renderNotes();
+    nState.textContent = result === 'saved' ? 'Saved. Check it landed in the Wally Notes folder.' : 'Downloaded. It goes to your browser’s download folder.';
+    document.getElementById('n-text').value = '';
+    document.getElementById('n-link').value = '';
+    light = ''; seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+  });
+
+  // ---------- Reflection ----------
+  const rKey = 'reflect-week' + WEEK;
+  const reflection = store.get(rKey, {});
+  const QUESTIONS = {};
+  document.querySelectorAll('[data-r]').forEach(t => {
+    const label = document.querySelector('label[for="' + t.id + '"]');
+    QUESTIONS[t.dataset.r] = label ? label.textContent : t.dataset.r;
+    if (typeof reflection[t.dataset.r] === 'string') t.value = reflection[t.dataset.r];
+    t.addEventListener('input', () => { reflection[t.dataset.r] = t.value; store.set(rKey, reflection); });
+  });
+  const rState = document.getElementById('r-state');
+  document.getElementById('r-save').addEventListener('click', async () => {
+    const who = fWho.value.trim() || store.get('name', '') || 'someone';
+    const lines = ['Wally week ' + WEEK + ' reflection', 'By: ' + who, 'Saved: ' + isoDate(new Date()), ''];
+    Object.keys(QUESTIONS).forEach(k => { lines.push(QUESTIONS[k]); lines.push((reflection[k] || '').trim() || '(no answer)'); lines.push(''); });
+    const ticked = Object.keys(checks).filter(k => checks[k]).sort();
+    lines.push('Rhythm and criterion ticks on this phone: ' + (ticked.length ? ticked.join(', ') : 'none'));
+    const result = await saveFile(isoDate(new Date()) + '_' + slug(who) + '_week' + WEEK + '-reflection.txt', lines.join('\n') + '\n');
+    rState.textContent = result === 'cancelled' ? 'Not saved yet.' : 'Reflection saved.';
+  });
+})();
+
+</script>
+</body>
+</html>
