@@ -549,7 +549,7 @@ footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;colo
       </div>
       <div class="field"><label for="n-text">What happened</label><textarea id="n-text" placeholder="e.g. Dog across the street on 7th Ave, about 30 m. Looked, took a treat, looked back on his own twice." required></textarea></div>
       <div class="field"><label for="n-link">Photo or video link (optional)</label><input type="url" id="n-link" placeholder="https://"></div>
-      <button class="btn" type="submit" id="n-save">Save note to folder</button>
+      <div class="seg" style="align-items:center"><button class="btn" type="submit" id="n-save">Save note to folder</button><button type="button" id="n-share">Share instead</button></div>
       <p class="save-state" id="n-state" aria-live="polite"></p>
     </form>
     <div class="entries" id="entries">
@@ -669,22 +669,28 @@ footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;colo
   });
 
   // ---------- Saving files to the phone ----------
-  async function saveFile(filename, text){
-    const blob = new Blob([text], {type:'text/plain'});
-    let file = null;
-    try { file = new File([blob], filename, {type:'text/plain'}); } catch(e) {}
-    // Share sheet first when the phone supports sharing files (Save to Files remembers the last folder)
-    if (file && navigator.canShare && navigator.canShare({files:[file]})) {
-      try { await navigator.share({files:[file]}); return 'saved'; }
-      catch(e) { if (e && e.name === 'AbortError') return 'cancelled'; }
-    }
-    // Fallback: a normal download into the browser's download folder
+  // Default: a direct download (lands in Safari's download folder, set to Wally Notes).
+  // Backup: the share sheet, for phones where downloads misbehave.
+  function downloadFile(filename, text){
+    const blob = new Blob([text], {type:'application/octet-stream'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename; a.rel = 'noopener';
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
     return 'downloaded';
+  }
+  async function shareFile(filename, text){
+    let file = null;
+    try { file = new File([text], filename, {type:'text/plain'}); } catch(e) {}
+    if (file && navigator.canShare && navigator.canShare({files:[file]})) {
+      try { await navigator.share({files:[file]}); return 'saved'; }
+      catch(e) { return (e && e.name === 'AbortError') ? 'cancelled' : 'failed'; }
+    }
+    return 'unsupported';
+  }
+  async function saveFile(filename, text, how){
+    return how === 'share' ? shareFile(filename, text) : downloadFile(filename, text);
   }
   const slug = s => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'someone';
 
@@ -733,8 +739,11 @@ footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;colo
   renderNotes();
 
   const nState = document.getElementById('n-state');
+  let how = 'download';
+  document.getElementById('n-share').addEventListener('click', () => { how = 'share'; document.getElementById('note-form').requestSubmit(); });
   document.getElementById('note-form').addEventListener('submit', async e => {
     e.preventDefault();
+    const method = how; how = 'download';
     const who = fWho.value.trim();
     const text = document.getElementById('n-text').value.trim();
     if (!who) { nState.textContent = 'Add your name first, so Claude knows who wrote the note.'; return; }
@@ -759,10 +768,11 @@ footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;colo
       text,
       ''
     ].filter(x => x !== null).join('\n');
-    const result = await saveFile(filename, body);
+    const result = await saveFile(filename, body, method);
+    if (result === 'unsupported' || result === 'failed') { nState.textContent = 'Sharing didn\u2019t work on this phone. Use Save note to folder instead.'; return; }
     if (result === 'cancelled') { nState.textContent = 'Not saved. Tap Save note again when you are ready.'; return; }
     myNotes.unshift(note); store.set('notes', myNotes.slice(0, 100)); renderNotes();
-    nState.textContent = result === 'saved' ? 'Saved. Check it landed in the Wally Notes folder.' : 'Downloaded. It goes to your browser’s download folder.';
+    nState.textContent = result === 'saved' ? 'Shared. If you chose Save to Files, check it is in Wally Notes.' : 'If Safari asks, tap Download. The note goes to your download folder (Wally Notes, once set up).';
     document.getElementById('n-text').value = '';
     document.getElementById('n-link').value = '';
     light = ''; seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
@@ -785,8 +795,8 @@ footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;colo
     Object.keys(QUESTIONS).forEach(k => { lines.push(QUESTIONS[k]); lines.push((reflection[k] || '').trim() || '(no answer)'); lines.push(''); });
     const ticked = Object.keys(checks).filter(k => checks[k]).sort();
     lines.push('Rhythm and criterion ticks on this phone: ' + (ticked.length ? ticked.join(', ') : 'none'));
-    const result = await saveFile(isoDate(new Date()) + '_' + slug(who) + '_week' + WEEK + '-reflection.txt', lines.join('\n') + '\n');
-    rState.textContent = result === 'cancelled' ? 'Not saved yet.' : 'Reflection saved.';
+    const result = await saveFile(isoDate(new Date()) + '_' + slug(who) + '_week' + WEEK + '-reflection.txt', lines.join('\n') + '\n', 'download');
+    rState.textContent = 'If Safari asks, tap Download. The reflection goes to your download folder.';
   });
 })();
 
