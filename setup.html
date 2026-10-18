@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wally">
+<meta name="theme-color" content="#1d2a33">
+<title>Join Wally's Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: a pocket field notebook. One column, phone first, sticky page tabs, cards only for things you act on. */
+:root{
+  --bg:#f3f6f4; --surface:#ffffff; --sunk:#e6ece8; --line:#cfd9d3;
+  --ink:#1d2a33; --muted:#566670; --accent:#d9832b; --accent-ink:#8a4a0c; --accent-soft:#fbe9d5;
+  --teal:#2c6e6a; --teal-soft:#dcebe8;
+  --green:#2f7d4a; --green-soft:#ddf0e2; --yellow:#a87700; --yellow-soft:#fbf0cc; --red:#b2382f; --red-soft:#f8dedb;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121a1e; --surface:#1a252b; --sunk:#0e1518; --line:#2c3b42;
+  --ink:#e8eef0; --muted:#9fb0b8; --accent:#f0a052; --accent-ink:#f6bf86; --accent-soft:#3a2a1a;
+  --teal:#7cc3bb; --teal-soft:#1c3533;
+  --green:#7fcf98; --green-soft:#1b3324; --yellow:#e8c25a; --yellow-soft:#362d12; --red:#f08b80; --red-soft:#3d1f1c;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a1e; --surface:#1a252b; --sunk:#0e1518; --line:#2c3b42;
+  --ink:#e8eef0; --muted:#9fb0b8; --accent:#f0a052; --accent-ink:#f6bf86; --accent-soft:#3a2a1a;
+  --teal:#7cc3bb; --teal-soft:#1c3533;
+  --green:#7fcf98; --green-soft:#1b3324; --yellow:#e8c25a; --yellow-soft:#362d12; --red:#f08b80; --red-soft:#3d1f1c;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--teal)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,7vw,2.8rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.45rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.12rem;font-weight:700}
+p{margin:0}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+
+/* Tabs */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.05rem;white-space:nowrap}
+.brand span{color:var(--accent)}
+.tabs{display:flex;gap:6px;margin-left:auto}
+.tab{font:inherit;font-size:.92rem;font-weight:700;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 13px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+main{padding-block:28px 64px}
+section{display:grid;gap:14px}
+.page{display:grid;gap:40px}
+.lede{font-size:1.08rem;max-width:62ch}
+.hero{display:grid;gap:12px}
+
+/* Profile */
+.profile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.profile-head{display:flex;gap:14px;align-items:center;padding:16px;background:var(--teal-soft)}
+.paw{flex:none;width:52px;height:52px;border-radius:50%;background:var(--surface);display:grid;place-items:center}
+.paw svg{width:30px;height:30px;fill:var(--teal)}
+.profile dl{margin:0;display:grid;grid-template-columns:minmax(110px,32%) 1fr}
+.profile dt,.profile dd{margin:0;padding:10px 16px;border-top:1px solid var(--line)}
+.profile dt{font-weight:700;color:var(--muted);font-size:.92rem}
+.age-note{font-size:.85rem;color:var(--muted)}
+
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.callout strong{color:var(--accent-ink)}
+
+/* Priorities */
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.lane{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;align-content:start;background:var(--surface)}
+.lane.now{border-color:var(--teal);box-shadow:inset 0 3px 0 var(--teal)}
+.lane ol,.lane ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);width:max-content}
+.lane.now .tag{background:var(--teal);color:var(--surface)}
+
+/* Steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.steps li::before{content:counter(s);font-family:var(--f-display);font-weight:800;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+
+/* Tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.word{font-family:var(--f-display);font-weight:800;color:var(--accent-ink);white-space:nowrap}
+.status{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.status.built{color:var(--green)}
+
+.stars{font-family:var(--f-mono);font-weight:500;white-space:nowrap;color:var(--accent-ink)}
+.stage-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stage{padding:12px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);display:grid;gap:4px}
+.stage b{font-family:var(--f-display)}
+.meter{display:flex;gap:3px}
+.meter i{height:6px;flex:1;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--teal)}
+
+/* Week page */
+.week-hero{display:grid;gap:10px;padding:20px;border-radius:var(--r);background:var(--ink);color:var(--bg)}
+.week-hero .eyebrow{color:var(--accent)}
+.week-hero p{max-width:60ch;opacity:.92}
+.skill{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px}
+.skill-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between}
+.skill .num{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.chip{font-family:var(--f-mono);font-size:.75rem;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
+.chip.stage-chip{background:var(--teal-soft);color:var(--teal)}
+.kv{display:grid;gap:10px}
+.kv > div{display:grid;gap:2px}
+.kv .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.skill ol{margin:0;padding-left:1.25em;display:grid;gap:5px}
+.script{background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:.96rem}
+.script q{font-family:var(--f-display);font-weight:700;color:var(--accent-ink);quotes:"\201C" "\201D"}
+.criterion{border:1px dashed var(--teal);border-radius:8px;padding:10px 12px;display:grid;gap:8px}
+.tally{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--teal);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--surface);font-weight:700}
+.dot[aria-pressed="true"]{background:var(--teal)}
+.dot[aria-pressed="true"]::after{content:"✓"}
+.bonus{border-style:dashed}
+
+/* Rhythm grid */
+.rhythm{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.rhythm table{min-width:520px}
+.rhythm td,.rhythm th{text-align:center;padding:8px 6px}
+.rhythm td:first-child,.rhythm th:first-child{text-align:left;padding-left:14px;min-width:150px}
+.slot-name{font-weight:700;font-size:.92rem}
+.slot-sub{font-size:.8rem;color:var(--muted)}
+.tick{width:34px;height:34px;border-radius:8px;border:2px solid var(--line);background:var(--bg);cursor:pointer}
+.tick[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.tick[aria-pressed="true"]::after{content:"✓";color:var(--surface);font-weight:700}
+.today-col{background:var(--teal-soft)}
+
+/* Traffic light */
+.lights{display:grid;gap:10px}
+.light{display:grid;grid-template-columns:14px 1fr;gap:12px;padding:12px 14px;border-radius:var(--r)}
+.light::before{content:"";width:14px;border-radius:7px}
+.light.g{background:var(--green-soft)} .light.g::before{background:var(--green)}
+.light.y{background:var(--yellow-soft)} .light.y::before{background:var(--yellow)}
+.light.r{background:var(--red-soft)} .light.r::before{background:var(--red)}
+.light b{font-family:var(--f-display)}
+
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;align-content:start}
+.panel ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+/* Forms */
+label{font-weight:700;font-size:.92rem}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.form{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.field{display:grid;gap:4px;min-width:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"][data-v="green"]{background:var(--green);color:var(--surface);border-color:var(--green)}
+.seg button[aria-pressed="true"][data-v="yellow"]{background:var(--yellow);color:var(--surface);border-color:var(--yellow)}
+.seg button[aria-pressed="true"][data-v="red"]{background:var(--red);color:var(--surface);border-color:var(--red)}
+.seg button[aria-pressed="true"][data-v="win"]{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn{font:inherit;font-weight:700;background:var(--ink);color:var(--bg);border:0;padding:11px 18px;border-radius:999px;cursor:pointer;width:max-content}
+.btn:disabled{opacity:.5;cursor:default}
+.save-state{font-size:.85rem;color:var(--muted);min-height:1.2em}
+
+.entries{display:grid;gap:10px}
+.entry{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface);display:grid;gap:6px;border-left-width:5px}
+.entry.green{border-left-color:var(--green)} .entry.yellow{border-left-color:var(--yellow)} .entry.red{border-left-color:var(--red)} .entry.win{border-left-color:var(--accent)}
+.entry-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.82rem;color:var(--muted);font-family:var(--f-mono)}
+.entry p{white-space:pre-wrap;overflow-wrap:anywhere}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;color:var(--muted)}
+.offline{font-size:.88rem;padding:10px 12px;border-radius:8px;background:var(--yellow-soft);color:var(--ink)}
+
+.sources{font-size:.88rem;color:var(--muted);display:grid;gap:4px}
+.sources ul{margin:0;padding-left:1.2em}
+footer{border-top:1px solid var(--line);padding-block:20px;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){.page{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+a.tab{text-decoration:none;display:inline-block}
+.page > section > .btn{margin-top:4px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">Wally<span>.</span>hub</div>
+    <nav class="tabs" aria-label="Pages">
+      <a class="tab" href="./">Open the hub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<div class="page">
+
+  <section class="hero">
+    <span class="eyebrow">For family · iPhone · about 5 minutes</span>
+    <h1>Join Wally's Training</h1>
+    <p class="lede">Puppies learn fastest when everyone does the same thing. This page shows you how to set up your phone once, what to do with Wally day to day, and how to share what you notice.</p>
+  </section>
+
+  <section aria-labelledby="h-setup">
+    <h2 id="h-setup">One-time setup</h2>
+    <ol class="steps">
+      <li><div>
+        <b>Accept the Wally Notes folder.</b> Kelly has shared an iCloud Drive folder called <b>Wally Notes</b> with you. Open the invite link she sent (in Messages or Mail) and tap <b>Open</b>. It now appears in the <b>Files</b> app under iCloud Drive.
+        <p class="small muted">Don't see it? Check that iCloud Drive is on: Settings, tap your name, iCloud, iCloud Drive.</p>
+      </div></li>
+      <li><div>
+        <b>Put the hub on your home screen.</b> Open the hub link in <b>Safari</b> (not another browser). Tap the <b>Share</b> button (the square with an arrow), scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>. Wally now has his own icon.
+      </div></li>
+      <li><div>
+        <b>Save a practice note.</b> Open the hub, tap <b>This week</b>, scroll to <b>Training notes</b>. Type your name, write "Test note", and tap <b>Save note to folder</b>.
+        <p>A share menu pops up. Scroll down and tap <b>Save to Files</b>, choose <b>Wally Notes</b>, then tap <b>Save</b>.</p>
+        <p class="small muted">Your phone remembers the folder, so next time it's two taps. Your name is remembered too.</p>
+      </div></li>
+      <li><div>
+        <b>Check it worked.</b> Open the Files app, go to Wally Notes. You should see a file with today's date and your name. Done.
+      </div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="h-words">
+    <h2 id="h-words">Our words</h2>
+    <p class="muted">Use these exact words, said once, in a normal friendly voice. If Wally doesn't respond, make it easier rather than repeating.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Say</th><th>It means</th></tr></thead>
+        <tbody>
+          <tr><td class="word">"Yes!"</td><td>That was right. A treat is coming. Always follow with a reward.</td></tr>
+          <tr><td class="word">"Free"</td><td>Done. Go be a puppy.</td></tr>
+          <tr><td class="word">"Wally"</td><td>Look at me. Say it once.</td></tr>
+          <tr><td class="word">"Wally, come!"</td><td>Run to me. Always great things. Never for baths, nail trims or ending fun; go and get him for those.</td></tr>
+          <tr><td class="word">"Let's go"</td><td>Cheerful turn and walk away together.</td></tr>
+          <tr><td class="word">"Go sniff"</td><td>You may sniff now. It's a reward.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <h2 id="h-rules">House rules right now</h2>
+    <div class="twocol">
+      <div class="panel">
+        <h3>Please do</h3>
+        <ul>
+          <li>Reward Wally when he looks at you on his own</li>
+          <li>Reward calm: four paws on the floor, lying down, quietly watching</li>
+          <li>Keep training short, 1 to 5 minutes, and stop while he's having fun</li>
+          <li>Carry a few treats on walks</li>
+          <li>Let him rest. Tired puppies get wild.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Please don't</h3>
+        <ul>
+          <li>Let him greet dogs or people on leash this week. Cross the street or say "He's in training, we're saying hi from here!"</li>
+          <li>Scold, yell, jerk the leash or push him down</li>
+          <li>Hold him near something that scares or excites him "to get used to it"</li>
+          <li>Repeat a cue over and over</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-lights">
+    <h2 id="h-lights">If Wally barks at a person or dog</h2>
+    <div class="lights">
+      <div class="light g"><div><b>Green: he notices but still takes a treat.</b> Say "Yes!", treat by your leg, keep going.</div></div>
+      <div class="light y"><div><b>Yellow: he stares, leans, goes stiff.</b> Say "Let's go", turn and walk away cheerfully. Reward when he looks back at you.</div></div>
+      <div class="light r"><div><b>Red: barking, lunging, won't eat.</b> Calmly walk away. No scolding. Let him settle, then save a note with the colour Red.</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-notes">
+    <h2 id="h-notes">What's worth a note</h2>
+    <div class="twocol">
+      <div class="panel">
+        <h3>Save a note when</h3>
+        <ul>
+          <li>Something went really well (tag <b>Win</b>)</li>
+          <li>He got worked up: tag <b>Yellow</b> or <b>Red</b>, and say what set him off and roughly how far away</li>
+          <li>He tried somewhere new: a store, a friend's house, a busy park</li>
+          <li>You notice something new about what he loves or dislikes</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>No need to log</h3>
+        <ul>
+          <li>Every treat or every repetition</li>
+          <li>Ordinary, uneventful walks</li>
+        </ul>
+        <p class="small muted"><b>Got a video?</b> In Photos, tap Share, Save to Files, Wally Notes. Then mention it in your note, e.g. "video saved, 5:40 pm recall".</p>
+      </div>
+    </div>
+    <div class="callout"><strong>Every note helps.</strong> Each week Kelly and Claude read everyone's notes and decide what Wally works on next.</div>
+  </section>
+
+  <section aria-labelledby="h-trouble">
+    <h2 id="h-trouble">If something goes wrong</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>What happened</th><th>Try this</th></tr></thead>
+        <tbody>
+          <tr><td>The note went to Downloads instead</td><td>Open Files, find it in Downloads, press and hold it, tap Move, choose Wally Notes.</td></tr>
+          <tr><td>Wally Notes isn't in the save list</td><td>Tap Browse or the folder name at the top of the save screen, then iCloud Drive. Still missing? Ask Kelly to resend the invite.</td></tr>
+          <tr><td>The plan looks out of date</td><td>Close the hub completely and open it again. The plan updates each week.</td></tr>
+          <tr><td>Your ticks aren't on someone else's phone</td><td>That's normal. Tick boxes stay on each phone. Notes are what everyone shares.</td></tr>
+          <tr><td>You use an Android phone</td><td>Tell Kelly. The hub works, but saving notes is set up differently.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <a class="btn" href="./" style="text-decoration:none">Open Wally's hub</a>
+  </section>
+</div>
+</main>
+<footer><div class="wrap">Thank you for helping Wally learn. Kind, consistent and patient wins every time.</div></footer>
+</body>
+</html>
